@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import TextField from "@material-ui/core/TextField";
 import { useFormComponentStyles } from "./form-component.styles";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { Button } from "@material-ui/core";
 import { addCard } from "../../redux/features/card";
 
@@ -13,83 +13,78 @@ export const FormCard = () => {
   const [date, setDate] = useState("");
   const [cvv, setCvv] = useState("");
   const [amount, setAmount] = useState("");
-  // const [numberError, setNumberError] = useState(false);
-  // const [dateError, setDateError] = useState(false);
-  // const [cvvError, setCvvError] = useState(false);
-  // const [amountError, setAmountError] = useState(false);
-  // const [formValid, setFormValid] = useState(false);
   const [error, setError] = useState({
-    number: false,
-    cvv: false,
-    date: false,
-    amount: false,
+    number: true,
+    cvv: true,
+    date: true,
+    amount: true,
   });
 
   const handleChangedNumber = (e) => {
-    if (e.target.value.length > 12) return;
+    handleNumber();
+    if (e.target.value.length > 16) return;
     setNumber(e.target.value);
   };
   const handleChangedCvv = (e) => {
+    handleCvv();
     if (e.target.value.length > 3) return;
     setCvv(e.target.value);
   };
   const handleChangedDate = (e) => {
+    handleDate();
     if (e.target.value.length > 10) return;
     setDate(e.target.value);
   };
   const handleChangedAmount = (e) => {
+    handleAmount();
     setAmount(e.target.value);
   };
 
-  const handleError = () => {
+  const handleNumber = () => {
     if (number.length === 12 && Number.isInteger(+number)) {
       return setError({
         ...error,
-        number: true,
-        date: true,
-        cvv: true,
-        amount: true,
+        number: false,
       });
     }
   };
-
-  // const isDisabled =
-  //   number.length === 12 ||
-  //   cvv.length === 3 ||
-  //   date.length === 10 ||
-  //   amount.length > 0;
+  const handleCvv = () => {
+    if (cvv.length === 3 && Number.isInteger(+number)) {
+      return setError({
+        ...error,
+        cvv: false,
+      });
+    }
+  };
+  const handleDate = () => {
+    if (date.length === 10 && Number.isInteger(+number)) {
+      return setError({
+        ...error,
+        date: false,
+      });
+    }
+  };
+  const handleAmount = () => {
+    if (amount.length >= 0 && Number.isInteger(+number)) {
+      return setError({
+        ...error,
+        amount: false,
+      });
+    } else {
+      setError({ ...error, amount: true });
+    }
+  };
 
   const disabled = Object.values(error).some((val) => val);
+  console.log(disabled);
 
   const Pay = () => {
-    // if (!number) {
-    //   setNumberError(true);
-    // }
-    // if (!date) {
-    //   setDateError(true);
-    // }
-    // if (!cvv) {
-    //   setCvvError(true);
-    // }
-    // if (!amount) {
-    //   setAmountError(true);
-    // }
     if (number && date && cvv && amount) {
       dispatch(addCard(number, date, cvv, amount));
     }
   };
 
-  // const blurHandler = (e) => {};
-  // console.log(!!numberError);
-  // useEffect(() => {
-  //   if (numberError || dateError || cvvError || amountError) {
-  //     setFormValid(false);
-  //   } else {
-  //     setFormValid(true);
-  //   }
-  // }, [numberError, dateError, cvvError, amountError]);
-
-  console.log(Object.values(error));
+  console.log(error);
 
   return (
     <form className={classes.root} noValidate autoComplete="off">
@@ -101,11 +96,10 @@ export const FormCard = () => {
           variant="filled"
           type="number"
           value={number}
-          placeholder="000 000 000 000"
+          placeholder="0000 0000 0000 0000"
           onChange={handleChangedNumber}
           required={true}
           autoFocus
-          onBlur={handleError}
         />
         <TextField
           name="date"
@@ -115,7 +109,6 @@ export const FormCard = () => {
           value={date}
           onChange={handleChangedDate}
           required={true}
-          onBlur={handleError}
         />
       </div>
       <div>
@@ -129,7 +122,6 @@ export const FormCard = () => {
           placeholder="000"
           onChange={handleChangedCvv}
           required={true}
-          onBlur={handleError}
         />
         <TextField
           name="amount"
@@ -140,7 +132,6 @@ export const FormCard = () => {
           type="number"
           onChange={handleChangedAmount}
           required={true}
-          onBlur={handleError}
         />
       </div>
       <Button

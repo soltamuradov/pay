@@ -3,8 +3,8 @@ const mongoose = require("mongoose");
 const cardSchema = mongoose.Schema({
   number: {
     type: String,
-    maxLength: [12, "Введите правильный номер"],
-    minLength: [12, "Введите правильный номер"],
+    maxLength: [16, "Введите правильный номер"],
+    minLength: [16, "Введите правильный номер"],
     required: true,
   },
   date: {
